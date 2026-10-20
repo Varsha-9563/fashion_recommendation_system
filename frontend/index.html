@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fashion AI - CNN Recommender</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>👗 Fashion AI - CNN Recommender</h1>
+            <p>Advanced fashion recommendations using Deep Learning & Ensemble AI</p>
+            <div class="system-info">
+                <span class="status-badge status-checking" id="systemStatus">● Checking CNN System...</span>
+                <span class="model-info">ResNet50 + Ensemble Learning</span>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('image-search')">🖼️ Drag & Drop</button>
+            <button class="tab" onclick="switchTab('id-search')">🔍 Click to Search</button>
+            <button class="tab" onclick="switchTab('explore')">🧭 Explore</button>
+        </div>
+
+        <!-- Tab 1: Image Search (Drag & Drop) -->
+        <div id="image-search" class="tab-content active">
+            <div class="feature-description">
+                <p>📤 <strong>Upload an image</strong> to find similar fashion items and matching outfit recommendations</p>
+            </div>
+            
+            <div class="upload-section">
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-content">
+                        <div class="upload-icon">📁</div>
+                        <h3>Drag & Drop Fashion Image</h3>
+                        <p>Upload any clothing item to find similar products and matching outfits</p>
+                        <button class="browse-btn" onclick="document.getElementById('fileInput').click()">
+                            Browse Images
+                        </button>
+                        <input type="file" id="fileInput" accept="image/*" hidden>
+                    </div>
+                </div>
+                <div class="upload-preview" id="uploadPreview" style="display: none;">
+                    <img id="previewImage" src="" alt="Preview">
+                    <button class="remove-btn" onclick="clearUpload()">×</button>
+                </div>
+            </div>
+
+            <div class="action-section">
+                <button class="primary-btn" onclick="getImageRecommendations()" id="analyzeBtn" disabled>
+                    🔍 Analyze Image & Find Similar + Matching Outfits
+                </button>
+            </div>
+
+            <div id="imageResults" class="results-section" style="display: none;">
+                <div class="results-header">
+                    <h2>🎯 Visual Similarity Results</h2>
+                    <div class="results-stats" id="resultsStats"></div>
+                </div>
+                
+                <div class="results-category">
+                    <h3>👕 Similar Items (Same Category)</h3>
+                    <div class="products-grid" id="similarItemsGrid"></div>
+                </div>
+
+                <div class="results-category">
+                    <h3>👗 Matching Outfits (Complementary Items)</h3>
+                    <div class="products-grid" id="matchingOutfitsGrid"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: Search by ID (Click on Product) -->
+        <div id="id-search" class="tab-content">
+            <div class="feature-description">
+                <p>🖱️ <strong>Click on any product</strong> to find similar items and matching outfit suggestions</p>
+            </div>
+            
+            <div class="search-section">
+                <div class="search-box">
+                    <input type="text" id="productIdInput" placeholder="Enter Product ID (e.g., 15970)" value="">
+                    <button class="primary-btn" onclick="getRecommendationsById()">🔍 Find Similar & Matching</button>
+                </div>
+                
+                <div class="quick-actions">
+                    <button class="secondary-btn" onclick="loadRandomForIdSearch()">🎲 Load Random Products to Click</button>
+                </div>
+            </div>
+
+            <!-- Random products for clicking -->
+            <div id="randomForIdSearch" class="results-section">
+                <h3>🎲 Click Any Product Below to Get Recommendations</h3>
+                <div class="products-grid" id="randomForIdSearchGrid"></div>
+            </div>
+
+            <!-- Results after clicking/searching -->
+            <div id="idResults" class="results-section" style="display: none;">
+                <div class="query-product" id="queryProductInfo"></div>
+                
+                <div class="results-category">
+                    <h3>👕 Similar Items (Same Category)</h3>
+                    <div class="products-grid" id="idSimilarItemsGrid"></div>
+                </div>
+
+                <div class="results-category">
+                    <h3>👗 Matching Outfits (Complementary Items)</h3>
+                    <div class="products-grid" id="idMatchingOutfitsGrid"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 3: Explore (Search by Name) -->
+        <div id="explore" class="tab-content">
+            <div class="feature-description">
+                <p>🔍 <strong>Search products by name</strong> (e.g., "shirt", "jeans") - Click any result for recommendations</p>
+            </div>
+            
+            <div class="explore-section">
+                <h2>🔍 Explore Fashion Database</h2>
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Search products (e.g., shirt, jeans, dress)...">
+                    <select id="categorySelect">
+                        <option value="">All Categories</option>
+                        <option value="Topwear">Topwear</option>
+                        <option value="Bottomwear">Bottomwear</option>
+                        <option value="Dress">Dress</option>
+                        <option value="Footwear">Footwear</option>
+                        <option value="Accessories">Accessories</option>
+                    </select>
+                    <button class="primary-btn" onclick="searchProducts()">🔍 Search</button>
+                </div>
+
+                <div id="searchResults" class="results-section" style="display: none;">
+                    <h3>📦 Search Results - Click Any Product for Recommendations</h3>
+                    <div class="products-grid" id="searchResultsGrid"></div>
+                </div>
+
+                <div id="randomExplore" class="results-section">
+                    <h3>🎲 Random Fashion Picks - Click Any Item</h3>
+                    <div class="products-grid" id="randomProductsGrid"></div>
+                    <div class="load-more-section">
+                        <button class="secondary-btn" onclick="loadMoreRandom()" id="loadMoreBtn">
+                            🔄 Load More Products
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+            <div class="loading-content">
+                <div class="spinner"></div>
+                <h3 id="loadingMessage">Analyzing with AI...</h3>
+                <p id="loadingSubtext">Processing image with ResNet50 CNN</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
